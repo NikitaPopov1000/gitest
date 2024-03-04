@@ -1,0 +1,46 @@
+﻿@page "/searchresults"
+@using BlazorApp1
+@using Microsoft.EntityFrameworkCore
+@inject ApplicationDbContext DbContext
+@inject AppStateService AppStateService
+
+<h3>Search Results</h3>
+
+@if (searchResults == null)
+{
+    <p>Loading results...</p>
+}
+else if (searchResults.Count == 0)
+{
+    <p>No results found.</p>
+}
+else
+{
+    <div>
+        @foreach (var result in searchResults)
+        {
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">@result.ProjectName</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">Author: @result.Author</h6>
+                    <p class="card-text">Stargazers: @result.StargazersCount</p>
+                    <p class="card-text">Watchers: @result.WatchersCount</p>
+                    <a href="@result.RepositoryUrl" class="card-link">Go to Repository</a>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    private List<SearchResult> searchResults;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Use the current user's search query from AppStateService
+        string searchText = AppStateService.CurrentSearchText;
+
+        // Load search results from the database
+        searchResults = await DbContext.SearchResult.ToListAsync();
+    }
+}

@@ -1,0 +1,29 @@
+﻿@page "/search"
+
+@inject GitHubService GitHubService
+@inject AppStateService AppStateService
+@inject NavigationManager NavigationManager
+
+<div>
+    <h3>Search GitHub Projects</h3>
+    <div class="input-group mb-3">
+        <input type="text" class="form-control" @bind="searchText" placeholder="Enter search query">
+        <button class="btn btn-primary" @onclick="Search">Search</button>
+    </div>
+</div>
+
+@code {
+    private string searchText;
+
+    private async Task Search()
+    {
+        // Установка текущего запроса пользователя через AppStateService
+        AppStateService.CurrentSearchText = searchText;
+
+        // Вызываем метод поиска и сохранения результатов в базе данных
+        await GitHubService.SearchAndSaveResultsAsync(searchText);
+
+        // Перенаправляем пользователя на страницу с результатами поиска
+        NavigationManager.NavigateTo("/searchresults");
+    }
+}
